@@ -8,7 +8,6 @@
 - [Cài đặt](#cài-đặt)
 - [Cách sử dụng](#cách-sử-dụng)
 - [Mô hình](#mô-hình)
-- [Giấy phép](#giấy-phép)
 
 ## Giới thiệu
 Dự án này là một ứng dụng web sử dụng Flask để nhận diện ảnh và dự đoán độ tuổi và giới tính của người trong ảnh. Mô hình học sâu được sử dụng trong dự án này đã được huấn luyện trước và có thể phân loại người trong ảnh thành các nhóm độ tuổi và giới tính.
@@ -49,5 +48,4 @@ Dự án này là một ứng dụng web sử dụng Flask để nhận diện �
 ## Mô hình
 Mô hình học sâu được huấn luyện sử dụng **Keras** và **TensorFlow**. Mô hình nhận dạng ảnh được lưu trữ dưới dạng tệp `.keras`.
 
-## Giấy phép
-Dự án này sử dụng [Giấy phép MIT](LICENSE).
+
