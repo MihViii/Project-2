@@ -3,172 +3,219 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Upload and Crop</title>
-    <!-- CSS Cropper.js -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
-    <!-- Bootstrap CSS -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <!-- Custom CSS -->
+    <title>Upload, Capture, and Crop Image</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" />
     <style>
         body {
-            font-family: 'Poppins', sans-serif;
             margin: 0;
-            background: linear-gradient(to right, #3a7bd5, #00d2ff); /* Gradient xanh */
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
             color: #333;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .card {
-            background: linear-gradient(145deg, #ffffff, #f1f4f9); /* Nền sáng nhẹ */
-            border-radius: 15px;
-            box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.1),
-                        -5px -5px 10px rgba(255, 255, 255, 0.7);
-            padding: 30px;
-            max-width: 800px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-10px);
-            box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.2),
-                        -10px -10px 20px rgba(255, 255, 255, 0.8);
-        }
-
-        h2 {
-            background: linear-gradient(to right, #2b86c5, #6fb1fc); /* Gradient xanh nhạt */
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 600;
-            font-size: 2.5rem; /* Tiêu đề lớn hơn */
             text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
 
-        .form-group label {
-            font-size: 1.5rem; /* Phóng to nhãn */
-            font-weight: 500;
-            display: block;
-            margin-bottom: 10px;
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 600px;
         }
 
-        .form-control-file {
-            font-size: 1.2rem; /* Phóng to kích thước chữ input */
-            padding: 10px;
-            border: 2px solid #4facfe; /* Viền xanh */
-            border-radius: 10px;
+        h1 {
+            color: #4facfe;
+            margin-bottom: 20px;
         }
 
-        button {
-            background: linear-gradient(to right, #4facfe, #00f2fe); /* Gradient xanh nút */
-            color: #fff;
+        /* Custom file input styling */
+        .file-input-container {
+            position: relative;
+            width: 100%;
+            max-width: 280px;
+            margin: 0 auto 20px auto;
+        }
+
+        input[type="file"] {
+            display: none; /* Hide the default file input */
+        }
+
+        .file-input-btn {
+            display: inline-block;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            color: white;
+            padding: 12px 20px;
+            font-size: 16px;
             border: none;
-            border-radius: 20px;
-            padding: 15px 25px; /* Kích thước nút lớn hơn */
-            font-size: 1.3rem; /* Chữ nút to hơn */
-            transition: background 0.3s, transform 0.2s;
+            border-radius: 5px;
+            width: 100%;
+            cursor: pointer;
+            text-align: center;
+            box-sizing: border-box;
         }
 
-        button:hover {
-            background: linear-gradient(to right, #00f2fe, #4facfe); /* Hover nút */
-            transform: scale(1.05);
+        .file-input-btn:hover {
+            background: linear-gradient(to right, #00f2fe, #4facfe);
         }
 
-        #imagePreview {
+        /* Style for the camera and image container */
+        video, #image-container {
+            width: 100%;
             max-height: 400px;
-            display: none;
-            margin-top: 20px;
+            margin: 10px auto;
+            border: 2px dashed #4facfe;
             border-radius: 10px;
         }
 
-        #result {
-            margin-top: 30px;
-            font-weight: bold;
+        img {
+            max-width: 100%;
+            display: block;
+        }
+
+        .btn {
+            display: inline-block;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            color: white;
+            padding: 10px 20px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .btn:hover {
+            background: linear-gradient(to right, #00f2fe, #4facfe);
+        }
+
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
             color: #333;
-            font-size: 1.3rem; /* Chữ kết quả to hơn */
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="card mx-auto">
-            <h2>Upload and Crop Image</h2>
-            <!-- Form tải ảnh -->
-            <form id="uploadForm" enctype="multipart/form-data">
-                <div class="form-group">
-                    <label for="image">Choose an Image</label>
-                    <input type="file" class="form-control-file" id="image" name="image" accept="image/*" required>
-                </div>
-                <!-- Khu vực hiển thị ảnh -->
-                <div>
-                    <img id="imagePreview" class="img-fluid">
-                </div>
-                <button type="button" class="btn btn-block mt-4" id="cropButton" style="display: none;">
-                    Crop and Upload
-                </button>
-            </form>
-            <!-- Kết quả -->
-            <div id="result" class="text-center"></div>
+        <h1>Upload, Capture, and Crop Image</h1>
+
+        <!-- Chọn file từ máy -->
+        <p>Choose an Image</p>
+        <div class="file-input-container">
+            <input type="file" id="file-input" accept="image/*">
+            <label for="file-input" class="file-input-btn">Choose Image</label>
+        </div>
+
+        <!-- Bật camera -->
+        <p>Or Use Your Camera</p>
+        <button class="btn" id="start-camera">Start Camera</button>
+        <button class="btn" id="capture-btn" style="display: none;">Capture Photo</button>
+        <video id="camera" style="display: none;" autoplay></video>
+
+        <!-- Khu vực xem ảnh (crop) -->
+        <div id="image-container">
+            <img id="uploaded-image" src="" alt="Image Preview">
+        </div>
+
+        <!-- Change the text of the button -->
+        <button class="btn" id="crop-btn">Predict</button>
+
+        <!-- Kết quả dự đoán -->
+        <div class="result" id="result">
+            <p><strong>Prediction Result:</strong></p>
+            <p>Age Group: <span id="age-group">-</span></p>
+            <p>Gender: <span id="gender">-</span></p>
         </div>
     </div>
 
-    <!-- JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
     <script>
-        const imageInput = document.getElementById('image');
-        const imagePreview = document.getElementById('imagePreview');
-        const cropButton = document.getElementById('cropButton');
-        const resultDiv = document.getElementById('result');
         let cropper;
+        const fileInput = document.getElementById('file-input');
+        const uploadedImage = document.getElementById('uploaded-image');
+        const cropBtn = document.getElementById('crop-btn');
+        const resultAge = document.getElementById('age-group');
+        const resultGender = document.getElementById('gender');
 
-        // Khi chọn ảnh
-        imageInput.addEventListener('change', function (e) {
+        const startCameraBtn = document.getElementById('start-camera');
+        const captureBtn = document.getElementById('capture-btn');
+        const video = document.getElementById('camera');
+        let stream;
+
+        // Chọn file từ máy tính
+        fileInput.addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function (event) {
-                    imagePreview.src = event.target.result;
-                    imagePreview.style.display = 'block';
-                    if (cropper) cropper.destroy(); // Xóa cropper cũ nếu có
-                    cropper = new Cropper(imagePreview, {
-                        aspectRatio: 1, // Tỉ lệ vuông
-                        viewMode: 1
-                    });
-                    cropButton.style.display = 'block';
+                reader.onload = function(event) {
+                    showImage(event.target.result);
                 };
                 reader.readAsDataURL(file);
             }
         });
 
-        // Khi nhấn Crop and Upload
-        cropButton.addEventListener('click', function () {
-            cropper.getCroppedCanvas().toBlob(blob => {
-                const formData = new FormData();
-                formData.append('image', blob, 'cropped_image.jpg');
+        // Bật camera
+        startCameraBtn.addEventListener('click', async () => {
+            stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            video.srcObject = stream;
+            video.style.display = 'block';
+            captureBtn.style.display = 'inline-block';
+            startCameraBtn.style.display = 'none';
+        });
 
-                fetch('/predict', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    resultDiv.innerHTML = `
-                        <h4>Prediction Result:</h4>
-                        <p><strong>Age Group:</strong> ${data.age}</p>
-                        <p><strong>Gender:</strong> ${data.gender}</p>
-                    `;
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    resultDiv.innerHTML = `<p class="text-danger">Error: ${error.message}</p>`;
+        // Chụp ảnh từ camera
+        captureBtn.addEventListener('click', () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            const imageDataUrl = canvas.toDataURL('image/png');
+            showImage(imageDataUrl);
+
+            // Tắt camera
+            stream.getTracks().forEach(track => track.stop());
+            video.style.display = 'none';
+            captureBtn.style.display = 'none';
+            startCameraBtn.style.display = 'inline-block';
+        });
+
+        // Hiển thị ảnh và khởi tạo Cropper
+        function showImage(src) {
+            uploadedImage.src = src;
+            if (cropper) {
+                cropper.destroy();
+            }
+            cropper = new Cropper(uploadedImage, {
+                aspectRatio: 1,
+                viewMode: 1,
+            });
+        }
+
+        // Crop và gửi ảnh
+        cropBtn.addEventListener('click', function() {
+            if (cropper) {
+                cropper.getCroppedCanvas().toBlob((blob) => {
+                    const formData = new FormData();
+                    formData.append('image', blob);
+
+                    fetch('/predict', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        resultAge.textContent = data.age;
+                        resultGender.textContent = data.gender;
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
                 });
-            }, 'image/jpeg');
+            }
         });
     </script>
 </body>

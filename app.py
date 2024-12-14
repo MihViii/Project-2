@@ -7,7 +7,7 @@ import tempfile
 
 app = Flask(__name__)
 
-# Đường dẫn đến mô hình duy nhất
+# Đường dẫn đến mô hình
 MODEL_PATH = 'models/model.keras'
 
 # Kiểm tra nếu file mô hình tồn tại
@@ -57,10 +57,12 @@ def predict_age_group(age_output):
     age_groups = ["0-24", "25-49", "50-74", "75-99", "100-124"]
     return age_groups[np.argmax(age_output)]
 
+
 def predict_gender(gender_output):
     # Giả sử gender_output là mảng với 2 phần tử (female_prob, male_prob)
     female_prob, male_prob = gender_output[0]  # Lấy giá trị đầu tiên của batch
     return "Female" if male_prob > female_prob else "Male"
+
 
 if __name__ == '__main__':
     app.run(debug=True)
